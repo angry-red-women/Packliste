@@ -1,4 +1,4 @@
-const CACHE='packliste-v5';
+const CACHE='packliste-v6';
 const FILES=['./','./index.html','./style.css','./custom.css','./auth.js','./app.js','./app-v4.js','./manifest.json'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)))});
 self.addEventListener('activate',e=>{e.waitUntil(Promise.all([self.clients.claim(),caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k))))]))});

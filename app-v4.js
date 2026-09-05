@@ -4,24 +4,26 @@ function renderCategorized(){
   $('#empty').classList.toggle('hidden',!!t);$('#lists').classList.toggle('hidden',!t);$('#customCard').classList.toggle('hidden',!t);$('#progressCard').classList.toggle('hidden',!t);$('#tripChooser').classList.toggle('hidden',!state.trips.length);
   if(!t)return;
   $('#tripSubtitle').textContent=`${t.name} · ${days(t)} Tage`;
-  const A=baseItems(t),keys=allKeys(t),done=keys.filter(k=>t.checked?.[k]).length,pct=keys.length?Math.round(done/keys.length*100):0;
+  const A=baseItems(t),keys=allKeys(t).filter(k=>!t.excluded?.[k]),done=keys.filter(k=>t.checked?.[k]).length,pct=keys.length?Math.round(done/keys.length*100):0;
   $('#progressText').textContent=pct+' %';$('#progressBar').style.width=pct+'%';
   const root=$('#lists');root.innerHTML='';
   owners.forEach(([owner,title])=>{
     if(owner==='dog'&&!t.withYuna)return;
     const items=A[owner],sec=document.createElement('section'),grouped=Object.groupBy?Object.groupBy(items,x=>x.cat):items.reduce((a,x)=>((a[x.cat]??=[]).push(x),a),{});
-    sec.className='section';sec.innerHTML=`<div class="sectionHead"><h2>${title}</h2><span class="count">${items.filter(x=>t.checked?.[x.key]).length}/${items.length}</span></div><div class="items"></div>`;
+    const activeItems=items.filter(x=>!t.excluded?.[x.key]);
+    sec.className='section';sec.innerHTML=`<div class="sectionHead"><h2>${title}</h2><span class="count">${activeItems.filter(x=>t.checked?.[x.key]).length}/${activeItems.length}</span></div><div class="items"></div>`;
     const body=sec.querySelector('.items');
     Object.entries(grouped).forEach(([cat,arr])=>{
       const heading=document.createElement('div');heading.className='categoryTitle';heading.textContent=cat;body.appendChild(heading);
       arr.forEach(x=>{
-        const custom=x.tag==='catalog'||x.tag==='legacy',row=document.createElement('div');row.className='item '+(t.checked?.[x.key]?'checked':'');
-        row.innerHTML=`<input type="checkbox" ${t.checked?.[x.key]?'checked':''}><span class="label"></span>${x.qty!==1?`<span class="qty">${x.qty}${x.name==='Nassfutter'||x.name==='BARF'?' g':' ×'}</span>`:''}${x.tag==='legacy'?'<span class="itemActions"><button class="organizeX" title="Einsortieren">Einsortieren</button><button class="deleteX" title="Löschen">×</button></span>':''}`;
+        const custom=x.tag==='catalog'||x.tag==='legacy',excluded=!!t.excluded?.[x.key],row=document.createElement('div');row.className='item '+(excluded?'excluded':t.checked?.[x.key]?'checked':'');
+        row.innerHTML=`<input type="checkbox" ${t.checked?.[x.key]?'checked':''} ${excluded?'disabled':''}><span class="label"></span>${x.qty!==1?`<span class="qty">${x.qty}${x.name==='Nassfutter'||x.name==='BARF'?' g':' ×'}</span>`:''}${x.tag==='legacy'?'<span class="itemActions"><button class="organizeX" title="Einsortieren">Einsortieren</button><button class="deleteX" title="Dauerhaft löschen">×</button></span>':''}<button class="excludeX" title="${excluded?'Für diese Reise wieder verwenden':'Für diese Reise nicht benötigt'}">${excluded?'↶':'×'}</button>`;
         row.querySelector('.label').textContent=x.name;
         if(x.tag&&!custom){const tag=document.createElement('span');tag.className='tag';tag.textContent=x.tag;row.querySelector('.label').append(' ',tag)}
         row.querySelector('input').onchange=e=>{t.checked??={};t.checked[x.key]=e.target.checked;save();renderCategorized()};
         if(x.tag==='legacy')row.querySelector('.organizeX').onclick=()=>openOrganize(t,x);
         if(x.tag==='legacy')row.querySelector('.deleteX').onclick=()=>deleteCustom(t,x);
+        row.querySelector('.excludeX').onclick=()=>{t.excluded??={};if(excluded)delete t.excluded[x.key];else t.excluded[x.key]=true;save();render()};
         body.appendChild(row);
       });
     });
@@ -57,4 +59,5 @@ $('#saveOrganize').onclick=()=>{
   $('#organizeForm').classList.add('hidden');save();render();
 };
 $('#customText').onkeydown=e=>{if(e.key==='Enter')$('#addCustom').click()};
+$('#copyTrip').onclick=()=>{const t=trip();if(!t)return;const copy=structuredClone(t);copy.id=uid();copy.name=t.name+' Kopie';copy.checked={};copy.excluded={};state.trips.push(copy);state.active=copy.id;save();render()};
 render();

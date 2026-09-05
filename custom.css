@@ -5,4 +5,8 @@
 .organizeName{font-weight:700}
 .organizeX{border:0;padding:5px 8px;color:#2e6d5b;font-size:13px}
 .itemActions{display:flex;align-items:center;gap:2px}
+.excludeX{border:0;padding:3px 8px;color:#a42b2b;font-size:18px;line-height:1;background:transparent}
+.item.excluded{opacity:.42}
+.item.excluded .label{text-decoration:line-through}
+.item.excluded .excludeX{color:#2e6d5b;font-size:21px}
 @media(max-width:700px){.customGrid{grid-template-columns:1fr 1fr}.customTextLabel{grid-column:1/-1}.customGrid button{grid-column:1/-1}.organizeX{font-size:0}.organizeX:after{content:'↕';font-size:18px}}
