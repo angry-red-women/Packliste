@@ -16,12 +16,12 @@ function renderCategorized(){
       const heading=document.createElement('div');heading.className='categoryTitle';heading.textContent=cat;body.appendChild(heading);
       arr.forEach(x=>{
         const custom=x.tag==='catalog'||x.tag==='legacy',row=document.createElement('div');row.className='item '+(t.checked?.[x.key]?'checked':'');
-        row.innerHTML=`<input type="checkbox" ${t.checked?.[x.key]?'checked':''}><span class="label"></span>${x.qty!==1?`<span class="qty">${x.qty}${x.name==='Nassfutter'||x.name==='BARF'?' g':' ×'}</span>`:''}${custom?`<span class="itemActions">${x.tag==='legacy'?'<button class="organizeX" title="Einsortieren">Einsortieren</button>':''}<button class="deleteX" title="Löschen">×</button></span>`:''}`;
+        row.innerHTML=`<input type="checkbox" ${t.checked?.[x.key]?'checked':''}><span class="label"></span>${x.qty!==1?`<span class="qty">${x.qty}${x.name==='Nassfutter'||x.name==='BARF'?' g':' ×'}</span>`:''}${x.tag==='legacy'?'<span class="itemActions"><button class="organizeX" title="Einsortieren">Einsortieren</button><button class="deleteX" title="Löschen">×</button></span>':''}`;
         row.querySelector('.label').textContent=x.name;
         if(x.tag&&!custom){const tag=document.createElement('span');tag.className='tag';tag.textContent=x.tag;row.querySelector('.label').append(' ',tag)}
         row.querySelector('input').onchange=e=>{t.checked??={};t.checked[x.key]=e.target.checked;save();renderCategorized()};
         if(x.tag==='legacy')row.querySelector('.organizeX').onclick=()=>openOrganize(t,x);
-        if(custom)row.querySelector('.deleteX').onclick=()=>deleteCustom(t,x);
+        if(x.tag==='legacy')row.querySelector('.deleteX').onclick=()=>deleteCustom(t,x);
         body.appendChild(row);
       });
     });
