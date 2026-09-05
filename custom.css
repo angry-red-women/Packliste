@@ -1,0 +1,8 @@
+.hint{color:#64716d;font-size:13px;margin:-7px 0 13px}
+.customGrid{display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:8px;align-items:end}
+.customGrid label{font-size:12px;font-weight:650;color:#53615d}
+.customGrid input,.customGrid select{display:block;width:100%;margin-top:4px}
+.organizeName{font-weight:700}
+.organizeX{border:0;padding:5px 8px;color:#2e6d5b;font-size:13px}
+.itemActions{display:flex;align-items:center;gap:2px}
+@media(max-width:700px){.customGrid{grid-template-columns:1fr 1fr}.customTextLabel{grid-column:1/-1}.customGrid button{grid-column:1/-1}.organizeX{font-size:0}.organizeX:after{content:'↕';font-size:18px}}
